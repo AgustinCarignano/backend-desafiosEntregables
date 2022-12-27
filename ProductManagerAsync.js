@@ -16,7 +16,7 @@ class ProductManagerAsync {
     } else {
       ProductManagerAsync.contador = 1;
     }
-    this.path = `./dataAsync/productos-${ProductManagerAsync.contador}.json`;
+    this.path = `productosAsync-${ProductManagerAsync.contador}.json`;
   }
   async addProduct(productObj) {
     try {

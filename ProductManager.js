@@ -16,7 +16,7 @@ class ProductManager {
     } else {
       ProductManager.contador = 1;
     }
-    this.path = `./data/productos-${ProductManager.contador}.json`;
+    this.path = `productos-${ProductManager.contador}.json`;
   }
   addProduct(productObj) {
     const products = this.getProducts();
