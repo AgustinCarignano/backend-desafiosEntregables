@@ -3,7 +3,7 @@ import { ProductManager } from "./ProductManager.js";
 
 const app = express(); //Creación del servidor con Express
 const PORT = 8080; //Se define el puerto al que se estará escuchando
-const productManager = new ProductManager("productos.json"); //Creación de una instancia de la clase ProductManager
+const productManager = new ProductManager("./src/productos.json"); //Creación de una instancia de la clase ProductManager
 
 //Idicación del puerto a escuchar, con mensaje por consola
 app.listen(PORT, () => {
