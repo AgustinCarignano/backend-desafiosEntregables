@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="style.css" />
+<h3>Agregar o quitar productos en tiempo real</h3>
+<div id="product-list">
+  <div class="grid">
+    <h4>Producto</h4>
+    <h4>Description</h4>
+    <h4>Precio</h4>
+    <h4>Stock</h4>
+    <h4></h4>
+  </div>
+</div>
+
+<button id="addProduct">Agregar nuevo producto</button>
+<form class="form hidden" id="form">
+  <div class="form_div">
+    Title:
+    <input type="text" name="title" />
+    Description:
+    <input type="text" name="description" />
+    Price:
+    <input type="number" name="title" />
+    Thumbnail:
+    <input type="text" name="title" />
+  </div>
+  <div class="form_div">
+    Code:
+    <input type="text" name="title" />
+    Stock:
+    <input type="number" name="title" />
+    Status:
+    <input type="text" name="title" />
+    Category:
+    <input type="text" name="title" />
+  </div>
+  <input type="submit" value="Cargar Producto" />
+</form>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/index.js"></script>

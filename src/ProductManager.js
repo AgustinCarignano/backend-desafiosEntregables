@@ -1,12 +1,3 @@
-//Desafío entregable: "Manejo de archivos"
-
-//Notas:
-//-En este archivo, los llamados para leer o escribir el archivo .json se hace de manera asincrónica, utilizando promesas y async-await.
-//-La ruta en la que se guardan las archivos se debe definir al momento de instanciar el objeto.
-//-El método "addProduct" recibe un objeto, el cual debe tener el formato establecido. No recibe las propiedades por separado
-//-El método "updateProduct" recibe como parámetro la key de la propiedad a modificar y el nuevo valor. Se deberá llamar al método cada vez que se quiera cambiar una propiedad.
-//-El método "deleteProduct" elimina el archivo .json generado si al eliminar el producto ya no queda ninguno en el arreglo.
-
 import fs from "fs";
 
 export class ProductManager {
@@ -14,38 +5,39 @@ export class ProductManager {
     this.path = path;
   }
   async addProduct(productObj) {
-    try {
-      const products = await this.getProducts("all");
-      if (
-        productObj.title &&
-        productObj.description &&
-        productObj.price &&
-        productObj.thumbnail &&
-        productObj.code &&
-        productObj.stock
-      ) {
-        const codeAlredyExist = products.some(
-          (product) => product.code === productObj.code
-        );
-        if (!codeAlredyExist) {
-          const product = {
-            id: await this.#createId(),
-            ...productObj,
-          };
-          products.push(product);
-          await this.#writeFile(products);
-        } else {
-          this.#generateError(
-            "No pueden existir dos productos con el mismo código"
-          );
-        }
+    const products = await this.getProducts("all");
+    let statusForVerification = productObj.status; //como recibe un boolean que puede ser "false", utilizo esta variable para comprobar que el campo no este vacio.
+    if (productObj.status === false) statusForVerification = true;
+    if (
+      productObj.title &&
+      productObj.description &&
+      productObj.price &&
+      productObj.thumbnail &&
+      productObj.code &&
+      productObj.stock &&
+      statusForVerification &&
+      productObj.category
+    ) {
+      const codeAlredyExist = products.some(
+        (product) => product.code === productObj.code
+      );
+      if (!codeAlredyExist) {
+        const product = {
+          ...productObj,
+          id: await this.#createId(),
+        }; //coloco el id autogenerado luego del spread del objeto para que, en caso de haber ingresado una propiedad id, sobreescribirla.
+        products.push(product);
+        await this.#writeFile(products);
+        return product;
       } else {
         this.#generateError(
-          "Error al cargar el producto. No se permiten campos vacios en las propiedades del producto."
+          "No pueden existir dos productos con el mismo código"
         );
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      this.#generateError(
+        "Error al cargar el producto. No se permiten campos vacios en las propiedades del producto."
+      );
     }
   }
   async getProducts(limit) {
@@ -54,7 +46,7 @@ export class ProductManager {
         const productFile = await fs.promises.readFile(this.path, "utf-8");
         return limit === "all"
           ? JSON.parse(productFile)
-          : JSON.parse(productFile).slice(0, parseInt(limit));
+          : JSON.parse(productFile).slice(0, parseInt(limit)); //retorna el array completo o solo una cantidad limitada por el parametro "limit"
       } else {
         return [];
       }
@@ -63,50 +55,33 @@ export class ProductManager {
     }
   }
   async getProductById(id) {
-    try {
-      const products = await this.getProducts("all");
-      const searchedProduct = products.find(
-        (product) => product.id === parseInt(id)
-      );
-      return searchedProduct
-        ? searchedProduct
-        : this.#generateError(
-            `Not found, No existe un producto con el id: ${id}`
-          );
-    } catch (error) {
-      //console.log(error);
-      return error;
-    }
+    const products = await this.getProducts("all");
+    const searchedProduct = products.find(
+      (product) => product.id === parseInt(id)
+    );
+    return searchedProduct
+      ? searchedProduct
+      : this.#generateError(
+          `Not found, No existe un producto con el id: ${id}`
+        );
   }
-  async updateProduct(productId, keyToChange, newValue) {
-    try {
-      const products = await this.getProducts("all");
-      const productToChange = products.find(
-        (product) => product.id === productId
-      );
-      !productToChange &&
-        this.#generateError(`No existe un producto con el id: ${productId}`);
-      productToChange[keyToChange] = newValue;
-      await this.#writeFile(products);
-    } catch (error) {
-      console.log(error);
-    }
+  async updateProduct(productId, newObject) {
+    newObject.id && delete newObject.id; //con esta linea me aseguro de que no se modifique el id del objeto ya cargado en el array de productos
+    const products = await this.getProducts("all");
+    const productIndex = products.findIndex((prod) => prod.id === productId);
+    productIndex === -1 &&
+      this.#generateError(`No existe un producto con el id: ${productId}`);
+    products[productIndex] = { ...products[productIndex], ...newObject }; //sobreescribe las propiedades que se reciban por paramtero
+    await this.#writeFile(products);
+    return products[productIndex];
   }
   async deleteProduct(productId) {
-    try {
-      const products = await this.getProducts("all");
-      let i = products.findIndex((producto) => producto.id === productId);
-      i === -1 &&
-        this.#generateError(`No existe un producto con el id: ${productId}`);
-      products.splice(i, 1);
-      if (products.length === 0) {
-        await fs.promises.unlink(this.path);
-      } else {
-        await this.#writeFile(products);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    const products = await this.getProducts("all");
+    let i = products.findIndex((producto) => producto.id === productId);
+    i === -1 &&
+      this.#generateError(`No existe un producto con el id: ${productId}`);
+    products.splice(i, 1);
+    await this.#writeFile(products);
   }
   async #createId() {
     try {
@@ -117,7 +92,7 @@ export class ProductManager {
           : productFile[productFile.length - 1].id + 1;
       return id;
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
   #generateError(message) {
@@ -127,7 +102,7 @@ export class ProductManager {
     try {
       await fs.promises.writeFile(this.path, JSON.stringify(product));
     } catch (error) {
-      console.log(error);
+      return error;
     }
   }
 }
