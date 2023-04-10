@@ -1,91 +1,67 @@
 import express from "express";
-import { Server } from "socket.io";
-import { ProductManager } from "./ProductManager.js";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import handlebars from "express-handlebars";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import "./middlewares/passport.middleware.js";
+import "./DAL/dbconfig.js";
+import config from "./config.js";
+import { __dirname } from "./utils/path.utils.js";
+//Routes imports -------------------------------------------
+import cartsRouter from "./routes/carts.router.js";
+import productsRouter from "./routes/products.router.js";
+import usersRouter from "./routes/users.router.js";
+import viewsRouter from "./routes/views.router.js";
 
 const app = express();
-const PORT = 8080;
-
-//dirname
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const PORT = config.port;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(`${__dirname}/public`));
 
-//Instancia de la clase para usar los metodos disponibles para la manipulacion de los productos
-const productManager = new ProductManager(`${__dirname}/productos.json`);
-
-//handlebars
+//Views --------------------------------------------------
 app.engine("handlebars", handlebars.engine());
-app.set("view engine", "handlebars");
 app.set("views", `${__dirname}/views`);
+app.set("view engine", "handlebars");
 
-//metodos de la ruta raiz con protocolo http
-app.get("/", async (req, res) => {
-  const { limit } = req.query;
-  const products = await productManager.getProducts(limit || "all");
-  res.render("index", { products });
+//Cookies ------------------------------------------------
+const COOKIE_KEY = config.cookieKey;
+app.use(cookieParser(COOKIE_KEY));
+
+//Session ------------------------------------------------
+const URI = config.uri;
+const SESSION_KEY = config.sessionKey;
+app.use(
+  session({
+    store: new MongoStore({
+      mongoUrl: URI,
+    }),
+    resave: false,
+    saveUninitialized: false,
+    secret: SESSION_KEY,
+    cookie: { maxAge: 86400000 },
+  })
+);
+
+//Passport ------------------------------------------------
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Routes --------------------------------------------------
+app.use("/api/carts/", cartsRouter);
+app.use("/api/products/", productsRouter);
+app.use("/api/users/", usersRouter);
+app.use("/views", viewsRouter);
+
+app.get("/", (_req, res) => {
+  res.redirect("/views/login");
+});
+app.get("/*", (_req, res) => {
+  res.render("errorUrl");
 });
 
-app.post("/", async (req, res) => {
-  try {
-    const productToAdd = req.body;
-    const newProduct = await productManager.addProduct(productToAdd);
-    res
-      .status(200)
-      .json({ message: "Producto cargado con éxito", product: newProduct });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.delete("/:pid", async (req, res) => {
-  try {
-    const { pid } = req.params;
-    await productManager.deleteProduct(parseInt(pid));
-    res.json({ message: "producto eliminado con éxito" });
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
-
-//coneccion con el servidor socket cuando se llama a la ruta indicada
-app.get("/realtimeproducts", async (req, res) => {
-  const { limit } = req.query;
-  const products = await productManager.getProducts(limit || "all");
-  res.render("realTimeProducts", { products });
-});
-
-const httpServer = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Escuchando al puerto ${PORT}`);
-});
-
-//Websocket
-const socketServer = new Server(httpServer);
-
-socketServer.on("connection", async (socket) => {
-  console.log("Cliente conectado", socket.id);
-  socket.on("disconnect", () => {
-    console.log("Cliente desconectado", socket.id);
-  });
-
-  const products = await productManager.getProducts("all");
-
-  socket.emit("inicio", products, "Conectado con Websocket");
-
-  socket.on("deleteProduct", async (pid) => {
-    await productManager.deleteProduct(parseInt(pid));
-    const products = await productManager.getProducts("all");
-    socket.emit("inicio", products);
-  });
-
-  socket.on("addProduct", async (obj) => {
-    await productManager.addProduct(obj);
-    const products = await productManager.getProducts("all");
-    socket.emit("inicio", products);
-  });
 });

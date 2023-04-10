@@ -1,0 +1,35 @@
+<div class="productContainer">
+  <p>Hola <strong>{{user.name}}</strong> <small>(rol: {{user.rol}})</small></p>
+  <br />
+  <a href="/api/users/logout">Logout</a>
+  {{#if render}}
+    <h1>Productos</h1>
+    <div class="cardContainer">
+      {{#each payload}}
+        <div class="card">
+          <h4>{{title}}</h4>
+          <p>${{price}}</p>
+          <a class="links" href="/views/products/{{id}}">Detalle</a>
+        </div>
+      {{/each}}
+    </div>
+    <div class="paginate">
+      {{#if hasPrevPage}}
+        <a href={{prevLink}}>&lt&lt Anterior</a>
+      {{/if}}
+      {{#if hasNextPage}}
+        <a href={{nextLink}}>Siguiente >></a>
+      {{/if}}
+    </div>
+  {{else}}
+    <h2>Error 404: El recurso al que intenta acceder no existe</h2>
+    <div class="linkError">
+      <a href="/views/products">Home</a>
+    </div>
+  {{/if}}
+  {{#if cartId}}
+    <div>
+      <a href="/views/carts/{{cartId}}">Ver Carrito</a>
+    </div>
+  {{/if}}
+</div>
