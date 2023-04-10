@@ -1,4 +1,0 @@
-                            No tengo cuenta ===> Registrasrse ===> Ingreso datos, genero token, guardo en cookies e ingreso. O bien mando a Login
-pagina inicial "Login"
-                            Tengo cuenta ===> Ingreso credenciales ===> Error login si esta mal
-                                                                        Generar token, guardar en cookies e ingresar al sitio si esta ok
