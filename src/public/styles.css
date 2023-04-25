@@ -1,3 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+body {
+  margin: 0;
+}
+
+.chatContainer {
+  font-size: 16px;
+  background-color: #303030;
+  color: whitesmoke;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+}
+
+.chatTitle {
+  margin: 0;
+  padding: 0px 0 10px;
+  font-size: 3rem;
+}
+
+.panel {
+  width: 600px;
+  margin: 0 auto;
+  height: 75vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-color: #909090;
+  border-radius: 10px;
+  padding: 20px;
+  color: #151515;
+}
+
+.chatForm {
+  width: 100%;
+  height: 15%;
+  display: flex;
+  align-items: center;
+  overflow-y: hidden;
+  justify-content: space-between;
+  margin: 0;
+}
+
+#mensaje,
+textarea {
+  width: 85%;
+  height: 100%;
+  font-size: 1rem;
+  outline-style: none;
+  resize: none;
+  overflow-y: initial;
+  font-family: "Poppins", sans-serif;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+#chatHistory {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+  height: 85%;
+  margin-bottom: 10px;
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.user,
+.message {
+  font-size: 0.8rem;
+  margin: 0 15px;
+  text-align: left;
+  display: block;
+}
+
+.message {
+  font-size: 1.3rem;
+  margin-bottom: 3px;
+}
+
+.own {
+  text-align: right;
+}
+
+/* #button,
+#cleanHistory {
+  font-size: 1.5rem;
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  margin: 0 auto;
+  background-color: white;
+  transition: 0.3s;
+} */
+/* #button:hover,
+#cleanHistory:hover {
+  background-color: #eee;
+  transform: scale(1.1);
+} */
+
+#cleanHistory {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
 h1 {
   text-align: center;
   margin: 5px 0;
@@ -28,6 +139,12 @@ a:link,
 a:visited,
 a:active {
   text-decoration: none;
+}
+
+.flexContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .cartContainer {
@@ -94,4 +211,30 @@ a:active {
 
 .linkError {
   margin-bottom: 20px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.chatBtns {
+  cursor: pointer;
+  font-size: 1.5rem;
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  margin: 0 auto;
+  background-color: white;
+  color: #222;
+  transition: 0.3s;
 }

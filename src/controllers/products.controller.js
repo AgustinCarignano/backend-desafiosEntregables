@@ -1,8 +1,6 @@
-import { ProductsService } from "../services/products.service.js";
+import productsService from "../services/products.service.js";
 
-const productsService = new ProductsService();
-
-export class ProductsController {
+class ProductsController {
   async getProducts(req, res) {
     const { limit = 10, page = 1, sort, query } = req.query;
     try {
@@ -96,3 +94,5 @@ export class ProductsController {
     }
   }
 }
+
+export default new ProductsController();

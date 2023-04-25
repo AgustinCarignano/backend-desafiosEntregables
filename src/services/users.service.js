@@ -1,14 +1,12 @@
-import { UsersManager } from "../DAL/managers/users.manager.js";
-import { CartsManager } from "../DAL/managers/carts.manager.js";
+//import usersDAO from "../persistence/DAOs/usersDAO/usersMongo.js";
+import usersRepository from "../persistence/repositories/users.repository.js";
+import cartsDAO from "../persistence/DAOs/cartsDAO/cartsMongo.js";
 
-const usersManager = new UsersManager();
-const cartsManager = new CartsManager();
-
-export class UsersService {
+class UsersService {
   async addUser(user) {
     try {
-      const { _id } = await cartsManager.createCart();
-      const newUser = await usersManager.addUser({ ...user, cart: _id });
+      const { _id } = await cartsDAO.createCart();
+      const newUser = await usersRepository.addUser({ ...user, cart: _id });
       return newUser;
     } catch (error) {
       return error;
@@ -16,7 +14,7 @@ export class UsersService {
   }
   async getUserByEmail(email) {
     try {
-      const user = await usersManager.getUserByEmail(email);
+      const user = await usersRepository.getUserByEmail(email);
       return user;
     } catch (error) {
       return error;
@@ -24,10 +22,20 @@ export class UsersService {
   }
   async getUserById(id) {
     try {
-      const user = await usersManager.getUserById(id);
+      const user = await usersRepository.getUserById(id);
+      return user;
+    } catch (error) {
+      return error;
+    }
+  }
+  async validateUser(email, password) {
+    try {
+      const user = await usersRepository.validateUser(email, password);
       return user;
     } catch (error) {
       return error;
     }
   }
 }
+
+export default new UsersService();

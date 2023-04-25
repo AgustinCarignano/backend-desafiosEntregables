@@ -1,6 +1,6 @@
-import { cartsModel } from "../models/carts.model.js";
+import { cartsModel } from "../../MongoDB/models/carts.model.js";
 
-export class CartsManager {
+class CartsMongo {
   async createCart() {
     try {
       const cart = await cartsModel.create({ products: [] });
@@ -73,3 +73,5 @@ export class CartsManager {
     return cart;
   }
 }
+
+export default new CartsMongo();

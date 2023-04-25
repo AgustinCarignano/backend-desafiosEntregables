@@ -1,13 +1,8 @@
-import { usersModel } from "../models/users.model.js";
-//import { CartsManager } from "./carts.manager.js";
+import { usersModel } from "../../MongoDB/models/users.model.js";
 
-//const cartsManager = new CartsManager();
-
-export class UsersManager {
+class UserMongo {
   async addUser(userObj) {
     try {
-      // const { id } = await cartsManager.createCart();
-      // const user = await usersModel.create({ ...userObj, cart: id });
       const user = await usersModel.create(userObj);
       return user;
     } catch (error) {
@@ -31,3 +26,5 @@ export class UsersManager {
     }
   }
 }
+
+export default new UserMongo();

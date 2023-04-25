@@ -1,9 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { UsersController } from "../controllers/users.controller.js";
+import authController from "../controllers/auth.controller.js";
 import { isAdmin } from "../middlewares/auth.middleware.js";
 
-const usersController = new UsersController();
 const router = Router();
 
 router.get(
@@ -15,7 +14,7 @@ router.get(
   passport.authenticate("facebook", {
     failureRedirect: "/views/errorRegister",
   }),
-  usersController.facebookCallback
+  authController.facebookCallback
 );
 
 router.get(
@@ -27,22 +26,11 @@ router.get(
   passport.authenticate("github", {
     failureRedirect: "/views/errorRegister",
   }),
-  usersController.githubCallback
+  authController.githubCallback
 );
 
-router.post("/jwtRegister", usersController.jwtRegister);
+router.post("/jwtRegister", authController.jwtRegister);
 
-router.post("/jwtLogin", isAdmin, usersController.jwtLogin);
-
-router.get(
-  "/verifyToken",
-  passport.authenticate("jwt", {
-    failureRedirect: "/views/login/errorLogin",
-    passReqToCallback: true,
-  }),
-  usersController.openSession
-);
-
-router.get("/logout", usersController.closeSession);
+router.post("/jwtLogin", isAdmin, authController.jwtLogin);
 
 export default router;

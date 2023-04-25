@@ -1,6 +1,4 @@
-import { CartsService } from "../services/carts.service.js";
-
-const cartsService = new CartsService();
+import cartsService from "../services/carts.service.js";
 
 export class CartsController {
   async createCart(req, res) {
@@ -61,4 +59,48 @@ export class CartsController {
       cart,
     });
   }
+  async checkOut(req, res) {
+    const { cid } = req.params;
+    const { email } = req.user;
+    const cart = await cartsService.getCartById(cid);
+    const formatCart = JSON.parse(JSON.stringify(cart));
+    const productsInStock = [];
+    const productsOutOfStock = [];
+    for (let i = 0; i < formatCart.products.length; i++) {
+      if (
+        formatCart.products[i].product.stock >= formatCart.products[i].quantity
+      ) {
+        productsInStock.push(formatCart.products[i]);
+      } else {
+        productsOutOfStock.push(formatCart.products[i].product);
+      }
+    }
+    if (productsInStock.length === 0) {
+      return res.json({
+        message: "There is not available stock",
+        ticket: "",
+        productsOutOfStock,
+      });
+    }
+    const ticket = await cartsService.generateTicket(
+      productsInStock,
+      productsOutOfStock,
+      email,
+      cid
+    );
+    if (productsOutOfStock.length !== 0) {
+      return res.json({
+        message: "There are some products out of stock",
+        ticket,
+        productsOutOfStock,
+      });
+    }
+    return res.json({
+      message: "All products are in stock",
+      ticket,
+      productsOutOfStock,
+    });
+  }
 }
+
+export default new CartsController();

@@ -1,27 +1,24 @@
-import { CartsService } from "../services/carts.service.js";
-import { ProductsService } from "../services/products.service.js";
+import cartsService from "../services/carts.service.js";
+import productsService from "../services/products.service.js";
 
-const cartsService = new CartsService();
-const productsService = new ProductsService();
-
-export class ViewsController {
-  login(req, res) {
+class ViewsController {
+  login(_req, res) {
     res.render("login");
   }
 
-  register(req, res) {
+  register(_req, res) {
     res.render("register");
   }
 
-  redirectToLogin(req, res) {
+  redirectToLogin(_req, res) {
     res.redirect("/views/login");
   }
 
-  errorLogin(req, res) {
+  errorLogin(_req, res) {
     res.render("errorLogin");
   }
 
-  errorRegister(req, res) {
+  errorRegister(_req, res) {
     res.render("errorRegister");
   }
 
@@ -107,4 +104,12 @@ export class ViewsController {
       res.render("product", { render });
     }
   }
+
+  async activateChat(req, res) {
+    const { userSession } = req.signedCookies;
+    const userName = userSession.name;
+    res.render("chat", { user: userName });
+  }
 }
+
+export default new ViewsController();

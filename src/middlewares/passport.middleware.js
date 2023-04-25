@@ -2,10 +2,8 @@ import passport from "passport";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { Strategy as GithubStrategy } from "passport-github2";
 import { ExtractJwt, Strategy as jwtStrategy } from "passport-jwt";
-import { UsersService } from "../services/users.service.js";
+import usersService from "../services/users.service.js";
 import config from "../config.js";
-
-const usersService = new UsersService();
 
 const Facebook_ClientId = config.facebookClientId;
 const Facebook_ClientSecret = config.facebookClientSecret;
@@ -75,7 +73,7 @@ const cookieExtractor = (req) => {
 };
 
 passport.use(
-  "jwt",
+  "current",
   new jwtStrategy(
     {
       secretOrKey: SECRET_KEY,
@@ -87,11 +85,24 @@ passport.use(
   )
 );
 
+passport.use(
+  "jwt_bearer",
+  new jwtStrategy(
+    {
+      secretOrKey: SECRET_KEY,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    },
+    async (jwtPayload, done) => {
+      done(null, jwtPayload.user);
+    }
+  )
+);
+
 passport.serializeUser((user, done) => {
-  done(null, user._id);
+  done(null, user.email);
 });
 
-passport.deserializeUser(async (userId, done) => {
-  const user = await usersService.getUserById(userId);
+passport.deserializeUser(async (userEmail, done) => {
+  const user = await usersService.getUserByEmail(userEmail);
   done(null, user);
 });

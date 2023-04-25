@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { ViewsController } from "../controllers/views.contoller.js";
-import { isLogged, isNotLogged } from "../middlewares/auth.middleware.js";
+import viewsController from "../controllers/views.contoller.js";
+import {
+  isLogged,
+  isNotLogged,
+} from "../middlewares/protectRoutes.middleware.js";
+import { isUserAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-const viewsController = new ViewsController();
 
 router.get("/login", isLogged, viewsController.login);
 
@@ -20,5 +23,7 @@ router.get("/carts/:cid", isNotLogged, viewsController.getCartProducts);
 router.get("/products", isNotLogged, viewsController.getProducts);
 
 router.get("/products/:pid", isNotLogged, viewsController.getProduct);
+
+router.get("/messages", isUserAuth, viewsController.activateChat);
 
 export default router;

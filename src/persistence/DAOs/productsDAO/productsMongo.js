@@ -1,6 +1,6 @@
-import { productsModel } from "../models/products.model.js";
+import { productsModel } from "../../MongoDB/models/products.model.js";
 
-export class ProductsManager {
+class ProductsMongo {
   async getProducts(searchTerms) {
     /* let query = {};
     if (param.query) {
@@ -62,3 +62,5 @@ export class ProductsManager {
     }
   }
 }
+
+export default new ProductsMongo();

@@ -1,8 +1,6 @@
-import { ProductsManager } from "../DAL/managers/products.manager.js";
+import productsDAO from "../persistence/DAOs/productsDAO/productsMongo.js";
 
-const productsManager = new ProductsManager();
-
-export class ProductsService {
+class ProductsService {
   async getProducts(param) {
     let query = {};
     if (param.query) {
@@ -17,7 +15,7 @@ export class ProductsService {
       param.sort = param.sort === "asc" ? { price: 1 } : { price: -1 };
     }
     try {
-      const product = await productsManager.getProducts({ param, query });
+      const product = await productsDAO.getProducts({ param, query });
       return product;
     } catch (error) {
       return error;
@@ -25,7 +23,7 @@ export class ProductsService {
   }
   async getProductById(pid) {
     try {
-      const product = await productsManager.getProductById(pid);
+      const product = await productsDAO.getProductById(pid);
       return product;
     } catch (error) {
       return error;
@@ -33,7 +31,7 @@ export class ProductsService {
   }
   async addProduct(product) {
     try {
-      const newProduct = await productsManager.addProduct(product);
+      const newProduct = await productsDAO.addProduct(product);
       return newProduct;
     } catch (error) {
       return error;
@@ -41,7 +39,7 @@ export class ProductsService {
   }
   async updateProduct(pid, product) {
     try {
-      const updatedProduct = await productsManager.updateProduct(pid, product);
+      const updatedProduct = await productsDAO.updateProduct(pid, product);
       return updatedProduct;
     } catch (error) {
       return error;
@@ -49,10 +47,12 @@ export class ProductsService {
   }
   async deleteProduct(pid) {
     try {
-      const id = await productsManager.deleteProduct(pid);
+      const id = await productsDAO.deleteProduct(pid);
       return id;
     } catch (error) {
       return error;
     }
   }
 }
+
+export default new ProductsService();
