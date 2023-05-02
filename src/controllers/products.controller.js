@@ -1,4 +1,6 @@
 import productsService from "../services/products.service.js";
+import CustomError from "../utils/errors/customError.utils.js";
+import { ErrorEnums } from "../utils/errors/errors.enums.js";
 
 class ProductsController {
   async getProducts(req, res) {
@@ -50,48 +52,67 @@ class ProductsController {
       res.status(404).json({ status: "error", error: error.message });
     }
   }
-  async getProductById(req, res) {
+  async getProductById(req, res, next) {
     const { pid } = req.params;
     try {
       const product = await productsService.getProductById(pid);
+      if (product instanceof Error) {
+        CustomError.generateError(ErrorEnums.NOT_FOUND);
+      }
       res.json({ status: "success", product });
     } catch (error) {
-      res.status(404).json({ error: error.message });
+      next(error);
     }
   }
-  async addProduct(req, res) {
+  async addProduct(req, res, next) {
     const newProduct = req.body;
     try {
       const product = await productsService.addProduct(newProduct);
+      if (product instanceof Error) {
+        CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      }
       res.status(200).json({
         message: "Producto cargado con éxito",
         product,
       });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
+      //res.status(400).json({ error: error.message });
     }
   }
-  async updateProduct(req, res) {
+  async updateProduct(req, res, next) {
     const { pid } = req.params;
     const product = req.body;
     try {
       const newProduct = await productsService.updateProduct(pid, product);
+      if (product instanceof Error) {
+        CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      }
       res.status(200).json({
         message: "Producto modificado con éxito",
         newProduct,
       });
     } catch (error) {
-      res.status(404).json({ error: error.message });
+      next(error);
+      //res.status(404).json({ error: error.message });
     }
   }
-  async deleteProduct(req, res) {
+  async deleteProduct(req, res, next) {
     try {
       const { pid } = req.params;
       const id = await productsService.deleteProduct(pid);
+      if (id instanceof Error) {
+        CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      }
       res.status(200).json({ message: "producto eliminado con éxito", id });
     } catch (error) {
-      res.status(404).json({ error: error.message });
+      next(error);
+      //res.status(404).json({ error: error.message });
     }
+  }
+  async getMockProducts(_req, res) {
+    const products = await productsService.getMockProducts();
+    res.status(200).json({ message: "Mocking products", products });
   }
 }
 

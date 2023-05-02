@@ -16,6 +16,8 @@ import productsRouter from "./routes/products.router.js";
 import authRouter from "./routes/auth.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+import CustomError from "./utils/errors/customError.utils.js";
 
 const app = express();
 const PORT = config.port;
@@ -62,6 +64,8 @@ app.use("/api/products/", productsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/views", viewsRouter);
+
+app.use(errorMiddleware);
 
 app.get("/", (_req, res) => {
   res.redirect("/views/login");

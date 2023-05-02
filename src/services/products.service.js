@@ -1,4 +1,5 @@
 import productsDAO from "../persistence/DAOs/productsDAO/productsMongo.js";
+import { generateProducts } from "../utils/mocks.utils.js";
 
 class ProductsService {
   async getProducts(param) {
@@ -52,6 +53,10 @@ class ProductsService {
     } catch (error) {
       return error;
     }
+  }
+  async getMockProducts() {
+    const products = generateProducts(100);
+    return products;
   }
 }
 

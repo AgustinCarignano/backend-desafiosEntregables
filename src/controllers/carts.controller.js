@@ -1,105 +1,164 @@
 import cartsService from "../services/carts.service.js";
+import CustomError from "../utils/errors/customError.utils.js";
+import { ErrorEnums } from "../utils/errors/errors.enums.js";
 
 export class CartsController {
-  async createCart(req, res) {
+  async createCart(_req, res, next) {
     try {
       const cart = await cartsService.createCart();
+      if (cart instanceof Error) {
+        CustomError.generateError(ErrorEnums.SERVER_ERROR);
+      }
       res.status(200).json({
         message: "Nuevo carrito generado con éxito",
         cart,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
+      //res.status(500).json({ error: error.message });
     }
   }
-  async getCart(req, res) {
+  async getCart(req, res, next) {
     const { cid } = req.params;
-    const cart = await cartsService.getCartById(cid);
-    res.status(200).json({
-      message: `Productos del carrito con id: ${cid} obtenido con éxito`,
-      cart,
-    });
+    try {
+      if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.getCartById(cid);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.SERVER_ERROR);
+      res.status(200).json({
+        message: `Productos del carrito con id: ${cid} obtenido con éxito`,
+        cart,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  async addProduct(req, res) {
+  async addProduct(req, res, next) {
     const { cid, pid } = req.params;
-    const cart = await cartsService.addProductToCart(cid, pid);
-    res.status(200).json({ message: "Producto agregado con éxito", cart });
+    try {
+      if (!cid || !pid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.addProductToCart(cid, pid);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.SERVER_ERROR);
+      res.status(200).json({ message: "Producto agregado con éxito", cart });
+    } catch (error) {
+      next(error);
+    }
   }
-  async updateCart(req, res) {
+  async updateCart(req, res, next) {
     const { cid } = req.params;
-    const products = req.body;
-    const cart = await cartsService.updateCart(cid, products);
-    res.status(200).json({
-      message: "Carrito actualizado",
-      cart,
-    });
+    try {
+      if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const products = req.body;
+      const cart = await cartsService.updateCart(cid, products);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      res.status(200).json({
+        message: "Carrito actualizado",
+        cart,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  async updateProduct(req, res) {
+  async updateProduct(req, res, next) {
     const { cid, pid } = req.params;
     const { quantity } = req.body;
-    const cart = await cartsService.updateProductInCart(cid, pid, quantity);
-    res.status(200).json({
-      message: `El producto con id: ${pid} ha sido actualizado`,
-      cart,
-    });
+    try {
+      if (!cid || !pid || !quantity)
+        CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.updateProductInCart(cid, pid, quantity);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.NOT_FOUND);
+      res.status(200).json({
+        message: `El producto con id: ${pid} ha sido actualizado`,
+        cart,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  async deleteProduct(req, res) {
+  async deleteProduct(req, res, next) {
     const { cid, pid } = req.params;
-    const cart = await cartsService.deleteProduct(cid, pid);
-    res.status(200).json({
-      message: `Eliminado el producto con el id ${pid} del carrito`,
-      cart,
-    });
+    try {
+      if (!cid || !pid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.deleteProduct(cid, pid);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.NOT_FOUND);
+      res.status(200).json({
+        message: `Eliminado el producto con el id ${pid} del carrito`,
+        cart,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  async cleanCart(req, res) {
+  async cleanCart(req, res, next) {
     const { cid } = req.paramas;
-    const cart = await cartsService.cleanCart(cid);
-    res.status(200).json({
-      message: `Eliminados todos los productos del carrito con id: ${cid}`,
-      cart,
-    });
+    try {
+      if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.cleanCart(cid);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.NOT_FOUND);
+      res.status(200).json({
+        message: `Eliminados todos los productos del carrito con id: ${cid}`,
+        cart,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-  async checkOut(req, res) {
+  async checkOut(req, res, next) {
     const { cid } = req.params;
     const { email } = req.user;
-    const cart = await cartsService.getCartById(cid);
-    const formatCart = JSON.parse(JSON.stringify(cart));
-    const productsInStock = [];
-    const productsOutOfStock = [];
-    for (let i = 0; i < formatCart.products.length; i++) {
-      if (
-        formatCart.products[i].product.stock >= formatCart.products[i].quantity
-      ) {
-        productsInStock.push(formatCart.products[i]);
-      } else {
-        productsOutOfStock.push(formatCart.products[i].product);
+    try {
+      if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const cart = await cartsService.getCartById(cid);
+      if (cart instanceof Error)
+        CustomError.generateError(ErrorEnums.NOT_FOUND);
+      const formatCart = JSON.parse(JSON.stringify(cart));
+      const productsInStock = [];
+      const productsOutOfStock = [];
+      for (let i = 0; i < formatCart.products.length; i++) {
+        if (
+          formatCart.products[i].product.stock >=
+          formatCart.products[i].quantity
+        ) {
+          productsInStock.push(formatCart.products[i]);
+        } else {
+          productsOutOfStock.push(formatCart.products[i].product);
+        }
       }
-    }
-    if (productsInStock.length === 0) {
-      return res.json({
-        message: "There is not available stock",
-        ticket: "",
+      if (productsInStock.length === 0) {
+        return res.json({
+          message: "There is not available stock",
+          ticket: "",
+          productsOutOfStock,
+        });
+      }
+      const ticket = await cartsService.generateTicket(
+        productsInStock,
         productsOutOfStock,
-      });
-    }
-    const ticket = await cartsService.generateTicket(
-      productsInStock,
-      productsOutOfStock,
-      email,
-      cid
-    );
-    if (productsOutOfStock.length !== 0) {
+        email,
+        cid
+      );
+      if (ticket instanceof Error)
+        CustomError.generateError(ErrorEnums.SERVER_ERROR);
+      if (productsOutOfStock.length !== 0) {
+        return res.json({
+          message: "There are some products out of stock",
+          ticket,
+          productsOutOfStock,
+        });
+      }
       return res.json({
-        message: "There are some products out of stock",
+        message: "All products are in stock",
         ticket,
         productsOutOfStock,
       });
+    } catch (error) {
+      next(error);
     }
-    return res.json({
-      message: "All products are in stock",
-      ticket,
-      productsOutOfStock,
-    });
   }
 }
 
