@@ -1,20 +1,4 @@
-/* export function isNotLogged(req, res, next) {
-  if (req.session.logged) {
-    next();
-  } else {
-    const token = req?.cookies?.client_token;
-    if (!token) return res.redirect("/views/login");
-    res.redirect("/api/users/verifyToken");
-  }
-}
-
-export function isLogged(req, res, next) {
-  if (req.session.logged) {
-    res.redirect("/views/products");
-  } else {
-    next();
-  }
-} */
+import { logger } from "../utils/winston.js";
 
 export function isAdmin(req, res, next) {
   const { email, password } = req.body;
@@ -29,6 +13,7 @@ export function isAdmin(req, res, next) {
     );
     req.session.isAdmin = true;
     req.session.logged = true;
+    logger.info("Admin logged in");
     res.redirect("/views/products");
   } else {
     req.session.isAdmin = false;
@@ -38,16 +23,16 @@ export function isAdmin(req, res, next) {
 
 export function isAdminAuth(req, res, next) {
   if (req.session.isAdmin) next();
-  else
-    res
-      .status(403)
-      .json({ message: "Unauthorized to get access to this endpoint" });
+  else logger.warning("There has been an attempt to get an admin resource");
+  res
+    .status(403)
+    .json({ message: "Unauthorized to get access to this endpoint" });
 }
 
 export function isUserAuth(req, res, next) {
   if (!req.session.isAdmin) next();
-  else
-    res
-      .status(403)
-      .json({ message: "Unauthorized to get access to this endpoint" });
+  else log.info("An admin has tried to get a user resource");
+  res
+    .status(403)
+    .json({ message: "Unauthorized to get access to this endpoint" });
 }

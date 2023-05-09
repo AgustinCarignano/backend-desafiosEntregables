@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import config from "../../config.js";
+import { logger } from "../../utils/winston.js";
 
 const URI = config.uri;
 
 try {
   mongoose.connect(URI);
-  console.log("Conectado a la base de datos");
+  logger.info("Successfull connection to the database");
 } catch (error) {
-  console.log(error);
+  logger.error("Error trying to connect to database", error);
 }

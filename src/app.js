@@ -10,14 +10,9 @@ import "./persistence/MongoDB/configMongo.js";
 import config from "./config.js";
 import { __dirname } from "./utils/path.utils.js";
 //Routes imports -------------------------------------------
-import cartsRouter from "./routes/carts.router.js";
-import productsRouter from "./routes/products.router.js";
-//import usersRouter from "./routes/users.router.js";
-import authRouter from "./routes/auth.router.js";
-import sessionsRouter from "./routes/sessions.router.js";
-import viewsRouter from "./routes/views.router.js";
+import indexRouter from "./routes/index.router.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
-import CustomError from "./utils/errors/customError.utils.js";
+import { logger } from "./utils/winston.js";
 
 const app = express();
 const PORT = config.port;
@@ -58,12 +53,40 @@ app.use(passport.session());
 app.use(cors());
 
 //Routes --------------------------------------------------
-app.use("/api/carts/", cartsRouter);
-app.use("/api/products/", productsRouter);
-//app.use("/api/users/", usersRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/sessions", sessionsRouter);
-app.use("/views", viewsRouter);
+app.use("/api/carts/", indexRouter.carts);
+app.use("/api/products/", indexRouter.products);
+app.use("/api/auth", indexRouter.auth);
+app.use("/api/sessions", indexRouter.sessions);
+app.use("/views", indexRouter.views);
+
+//Rota de prueba de logger -----------------------------------------------
+app.get("/loggerTest", (req, res) => {
+  logger.info(
+    `El servidor se esta ejecutando en el entorno de ${
+      config.node_env === "dev" ? "desarrollo" : "produccion"
+    }`
+  );
+
+  logger.fatal(
+    "Log de tipo fatal. Debe aparecer en consola y en archivo solo si se esta en el entorno productivo"
+  );
+  logger.error(
+    "Log de tipo error. Debe aparecer en consola y en archivo solo si se esta en el entorno productivo"
+  );
+  logger.warning(
+    "Log de tipo warning. Debe aparecer solo en consola para ambos entornos"
+  );
+  logger.info(
+    "Log de tipo info. Debe aparecer solo en consola para ambos entornos"
+  );
+  logger.http(
+    "Log de tipo http. Debe aparecer en consola solo cuando se esta en el entorno de desarrollo"
+  );
+  logger.debug(
+    "Log de tipo debug. Debe aparecer en consola solo cuando se esta en el entorno de desarrollo"
+  );
+  res.send("Logger testing");
+});
 
 app.use(errorMiddleware);
 
@@ -75,7 +98,7 @@ app.get("/*", (_req, res) => {
 });
 
 export const httpServer = app.listen(PORT, () => {
-  console.log(`Escuchando al puerto ${PORT}`);
+  logger.info(`Listen to PORT ${PORT}`);
 });
 
 import("./controllers/messages.controller.js");

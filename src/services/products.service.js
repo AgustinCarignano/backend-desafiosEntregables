@@ -3,20 +3,20 @@ import { generateProducts } from "../utils/mocks.utils.js";
 
 class ProductsService {
   async getProducts(param) {
-    let query = {};
-    if (param.query) {
-      const i = param.query.indexOf(":");
-      const f = param.query.length;
-      const key = param.query.slice(0, i);
-      const value = param.query.slice(i + 1, f);
-      query[key] = value;
-      delete param.query;
-    }
-    if (param.sort) {
-      param.sort = param.sort === "asc" ? { price: 1 } : { price: -1 };
-    }
+    // let query = {};
+    // if (param.query) {
+    //   const i = param.query.indexOf(":");
+    //   const f = param.query.length;
+    //   const key = param.query.slice(0, i);
+    //   const value = param.query.slice(i + 1, f);
+    //   query[key] = value;
+    //   delete param.query;
+    // }
+    // if (param.sort) {
+    //   param.sort = param.sort === "asc" ? { price: 1 } : { price: -1 };
+    // }
     try {
-      const product = await productsDAO.getProducts({ param, query });
+      const product = await productsDAO.getProducts(param);
       return product;
     } catch (error) {
       return error;

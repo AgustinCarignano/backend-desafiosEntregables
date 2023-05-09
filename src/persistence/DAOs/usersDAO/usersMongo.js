@@ -6,7 +6,7 @@ class UserMongo {
       const user = await usersModel.create(userObj);
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error(error.message);
     }
   }
   async getUserByEmail(userEmail) {

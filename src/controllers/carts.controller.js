@@ -1,6 +1,7 @@
 import cartsService from "../services/carts.service.js";
 import CustomError from "../utils/errors/customError.utils.js";
 import { ErrorEnums } from "../utils/errors/errors.enums.js";
+import { logger } from "../utils/winston.js";
 
 export class CartsController {
   async createCart(_req, res, next) {
@@ -144,7 +145,9 @@ export class CartsController {
       );
       if (ticket instanceof Error)
         CustomError.generateError(ErrorEnums.SERVER_ERROR);
+      logger.info("A purchase was made successfully");
       if (productsOutOfStock.length !== 0) {
+        logger.info("There is not enough stock for some products");
         return res.json({
           message: "There are some products out of stock",
           ticket,

@@ -1,3 +1,4 @@
+import { logger } from "../../../utils/winston.js";
 import { cartsModel } from "../../MongoDB/models/carts.model.js";
 
 class CartsMongo {
@@ -6,6 +7,10 @@ class CartsMongo {
       const cart = await cartsModel.create({ products: [] });
       return cart;
     } catch (error) {
+      logger.error(
+        "An error occurred while trying to create a cart",
+        error.message
+      );
       return;
     }
   }
@@ -17,7 +22,12 @@ class CartsMongo {
       });
       return cart;
     } catch (error) {
-      throw new Error(error.message);
+      logger.error(
+        "An error occurred while trying to get a cart",
+        error.message
+      );
+      return error;
+      //throw new Error(error.message);
     }
   }
   async addProductToCart(cid, pid) {
@@ -37,40 +47,77 @@ class CartsMongo {
       cart.save();
       return cart;
     } catch (error) {
-      throw new Error(error.message);
+      logger.error(
+        "An error occurred while trying to add a product to cart",
+        error.message
+      );
+      return error;
+      //throw new Error(error.message);
     }
   }
   async updateCart(cid, newProducts) {
-    const cart = await cartsModel.findByIdAndUpdate(
-      cid,
-      { products: newProducts },
-      { new: true }
-    );
-    return cart;
+    try {
+      const cart = await cartsModel.findByIdAndUpdate(
+        cid,
+        { products: newProducts },
+        { new: true }
+      );
+      return cart;
+    } catch (error) {
+      logger.error(
+        "An error occurred while trying to update a cart",
+        error.message
+      );
+      return error;
+    }
   }
   async updateProductInCart(cid, pid, q) {
-    const cart = await cartsModel.findById(cid);
-    const product = cart.products.find(
-      (item) => item.product.toString() === pid
-    );
-    product.quantity = q;
-    cart.save();
-    return cart;
+    try {
+      const cart = await cartsModel.findById(cid);
+      const product = cart.products.find(
+        (item) => item.product.toString() === pid
+      );
+      product.quantity = q;
+      cart.save();
+      return cart;
+    } catch (error) {
+      logger.error(
+        "An error occurred while trying to update a cart",
+        error.message
+      );
+      return error;
+    }
   }
   async deleteProductById(cid, pid) {
-    const cart = await cartsModel.findById(cid);
-    const productIndex = cart.products.findIndex(
-      (item) => item.product.toString() === pid
-    );
-    cart.products.splice(productIndex, 1);
-    cart.save();
-    return cart;
+    try {
+      const cart = await cartsModel.findById(cid);
+      const productIndex = cart.products.findIndex(
+        (item) => item.product.toString() === pid
+      );
+      cart.products.splice(productIndex, 1);
+      cart.save();
+      return cart;
+    } catch (error) {
+      logger.error(
+        "An error occurred while trying to delete a produtc from a cart",
+        error.message
+      );
+      return error;
+    }
   }
   async deleteProducts(cid) {
-    const cart = await cartsModel.findById(cid);
-    cart.products.splice(0, cart.products.length);
-    cart.save();
-    return cart;
+    try {
+      const cart = await cartsModel.findById(cid);
+      cart.products.splice(0, cart.products.length);
+      cart.save();
+      return cart;
+    } catch (error) {
+      logger.error(
+        "An error occurred while trying to delete all products from a cart",
+        error.message
+      );
+      return error;
+    }
   }
 }
 

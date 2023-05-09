@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const data = {
+  node_env: process.env.NODE_ENV || "", //solo "dev" para desarrollo
   port: process.env.PORT,
   uri: process.env.URI,
   cookieKey: process.env.COOKIE_KEY,

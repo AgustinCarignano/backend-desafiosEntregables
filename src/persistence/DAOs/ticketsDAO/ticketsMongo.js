@@ -9,6 +9,10 @@ class TicketsMongo {
       const ticket = await this.model.findById(tid);
       return ticket;
     } catch (error) {
+      logger.error(
+        `An error occurred while trying to get the ticket with id ${tid}`,
+        error.message
+      );
       throw new Error(error.message);
     }
   }
@@ -21,6 +25,10 @@ class TicketsMongo {
       });
       return newTicket;
     } catch (error) {
+      logger.error(
+        "An error occurred while trying to generate a ticket",
+        error.message
+      );
       throw new Error(error.message);
     }
   }

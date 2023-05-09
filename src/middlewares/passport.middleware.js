@@ -19,7 +19,7 @@ passport.use(
       clientSecret: Facebook_ClientSecret,
       callbackURL: "http://localhost:8080/api/users/facebookCallback",
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (_accessToken, _refreshToken, profile, done) => {
       const { id, name } = profile._json;
       const user = await usersService.getUserByEmail(id);
       if (!user) {
@@ -47,7 +47,7 @@ passport.use(
       clientSecret: Github_ClientSecret,
       callbackURL: "http://localhost:8080/api/users/githubCallback",
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (_accessToken, _refreshToken, profile, done) => {
       const { email, name } = profile._json;
       const user = await usersService.getUserByEmail(email);
       if (!user) {
