@@ -18,6 +18,10 @@ router.get("/register", isLogged, viewsController.register);
 
 router.get("/register/errorRegister", isLogged, viewsController.errorRegister);
 
+router.get("/recovery_password", isLogged, viewsController.passRecover);
+
+router.get("/newPassword/:token", viewsController.newPassword);
+
 router.get("/carts/:cid", isNotLogged, viewsController.getCartProducts);
 
 router.get("/products", isNotLogged, viewsController.getProducts);

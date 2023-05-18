@@ -1,9 +1,10 @@
 import cartsService from "../services/carts.service.js";
 import productsService from "../services/products.service.js";
+import { verifyToken } from "../utils/jwt.utils.js";
 
 class ViewsController {
   login(_req, res) {
-    res.render("login");
+    res.render("login", { message: null });
   }
 
   register(_req, res) {
@@ -20,6 +21,22 @@ class ViewsController {
 
   errorRegister(_req, res) {
     res.render("errorRegister");
+  }
+
+  passRecover(_req, res) {
+    res.render("recovery", { sent: false });
+  }
+
+  newPassword(req, res) {
+    const { token } = req.params;
+    try {
+      verifyToken(token);
+      res.cookie("recovery_token", token);
+      res.render("newPassword", { auth: true });
+    } catch (error) {
+      res.render("newPassword", { auth: false });
+    }
+    // if (isValid) res.send("todo ok por ahora");
   }
 
   async getCartProducts(req, res) {

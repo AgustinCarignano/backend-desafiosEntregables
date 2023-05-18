@@ -66,8 +66,12 @@ class ProductsController {
   }
   async addProduct(req, res, next) {
     const newProduct = req.body;
+    const { email } = req.user;
     try {
-      const product = await productsService.addProduct(newProduct);
+      const product = await productsService.addProduct({
+        ...newProduct,
+        owner: email,
+      });
       if (product instanceof Error) {
         CustomError.generateError(ErrorEnums.MISSING_VALUES);
       }
@@ -81,25 +85,36 @@ class ProductsController {
     }
   }
   async updateProduct(req, res, next) {
-    const { pid } = req.params;
-    const product = req.body;
     try {
-      const newProduct = await productsService.updateProduct(pid, product);
+      const { pid } = req.params;
+      const { email } = req.user;
+      const { isAdmin } = req.session;
+      const newProduct = req.body;
+      const product = await productsService.getProductById(pid);
+      if (!isAdmin && email !== product.owner)
+        CustomError.generateError(ErrorEnums.UNAUTHORIZED);
+      const updatedProduct = await productsService.updateProduct(pid, {
+        ...product,
+        ...newProduct,
+      });
       if (product instanceof Error) {
         CustomError.generateError(ErrorEnums.MISSING_VALUES);
       }
       res.status(200).json({
         message: "Producto modificado con éxito",
-        newProduct,
+        updatedProduct,
       });
     } catch (error) {
       next(error);
-      //res.status(404).json({ error: error.message });
     }
   }
   async deleteProduct(req, res, next) {
     try {
       const { pid } = req.params;
+      const { email } = req.user;
+      const { owner } = await productsService.getProductById(pid);
+      if (email !== "adminCoder@coder.com" && email !== owner)
+        CustomError.generateError(ErrorEnums.UNAUTHORIZED);
       const id = await productsService.deleteProduct(pid);
       if (id instanceof Error) {
         CustomError.generateError(ErrorEnums.MISSING_VALUES);

@@ -4,15 +4,42 @@ import { ErrorEnums } from "../utils/errors/errors.enums.js";
 class SessionController {
   authUser(req, res) {
     const user = req.user;
-    res.json({ message: "Authorized user", user });
+    res.cookie(
+      "userSession",
+      { name: req.user.fullName, role: req.user.role },
+      { signed: true }
+    );
+    req.session.logged = true;
+    req.session.isAdmin = false;
+    res.json({ message: "User logged in", user });
   }
   openSession(req, res) {
     res.cookie(
       "userSession",
-      { name: req.user.fullName, rol: "user" },
+      { name: req.user.fullName, role: req.user.role },
       { signed: true }
     );
     req.session.logged = true;
+    res.redirect("/views/products");
+  }
+  async facebookCallback(req, res) {
+    res.cookie(
+      "userSession",
+      { name: req.user.fullName, role: req.user.role },
+      { signed: true }
+    );
+    req.session.logged = true;
+    req.session.isAdmin = false;
+    res.redirect("/views/products");
+  }
+  async githubCallback(req, res) {
+    res.cookie(
+      "userSession",
+      { name: req.user.fullName, role: req.user.role },
+      { signed: true }
+    );
+    req.session.logged = true;
+    req.session.isAdmin = false;
     res.redirect("/views/products");
   }
   closeSession(req, res) {

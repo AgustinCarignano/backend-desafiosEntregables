@@ -3,8 +3,8 @@ import config from "../config.js";
 
 const SECRET_KEY = config.secretOrKey;
 
-export const generateToken = async (obj) => {
-  return jwt.sign({ user: obj }, SECRET_KEY, { expiresIn: "1d" });
+export const generateToken = async (obj, expiresIn) => {
+  return jwt.sign({ user: obj }, SECRET_KEY, { expiresIn });
 };
 
 export const verifyToken = (token) => {

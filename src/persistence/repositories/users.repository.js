@@ -7,6 +7,10 @@ class UserRepository {
   constructor() {
     this.dao = usersDAO;
   }
+  async getAllUsers() {
+    const users = this.dao.getAllUsers();
+    return users;
+  }
   async addUser(user) {
     const userDB = new UserReqDTO(user);
     const userDAO = await this.dao.addUser(userDB);
@@ -30,6 +34,15 @@ class UserRepository {
       else throw new Error("Incorrect password");
     } catch (error) {
       return error;
+    }
+  }
+  async updateUser(email, obj) {
+    try {
+      const userDAO = await this.dao.updateUser(email, obj);
+      const userRes = new UserResDTO(userDAO);
+      return userRes;
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 }

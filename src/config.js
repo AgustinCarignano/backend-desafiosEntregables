@@ -14,6 +14,10 @@ const data = {
   githubClientId: process.env.GITHUB_CLIENT_ID,
   githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
   secretOrKey: process.env.SECRET_OR_KEY,
+  gmail: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASSWORD,
+  },
 };
 
 export default data;

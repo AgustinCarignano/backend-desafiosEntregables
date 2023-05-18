@@ -17,7 +17,7 @@ passport.use(
     {
       clientID: Facebook_ClientId,
       clientSecret: Facebook_ClientSecret,
-      callbackURL: "http://localhost:8080/api/users/facebookCallback",
+      callbackURL: "http://localhost:8080/api/sessions/facebookCallback",
     },
     async (_accessToken, _refreshToken, profile, done) => {
       const { id, name } = profile._json;
@@ -45,7 +45,7 @@ passport.use(
     {
       clientID: Github_ClientId,
       clientSecret: Github_ClientSecret,
-      callbackURL: "http://localhost:8080/api/users/githubCallback",
+      callbackURL: "http://localhost:8080/api/sessions/githubCallback",
     },
     async (_accessToken, _refreshToken, profile, done) => {
       const { email, name } = profile._json;

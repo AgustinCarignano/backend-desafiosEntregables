@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-faker.setLocale("es");
+//faker.setLocale("es");
 
 function generateProduct() {
   return {
@@ -8,9 +8,9 @@ function generateProduct() {
     title: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
     price: parseInt(faker.commerce.price()),
-    thumbnail: [faker.image.imageUrl()],
-    code: faker.address.zipCode(),
-    stock: faker.datatype.number(300),
+    thumbnail: [faker.image.url()],
+    code: faker.location.zipCode(),
+    stock: faker.number.int(300),
     status: faker.datatype.boolean(),
     category: faker.commerce.department(),
   };

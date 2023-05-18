@@ -59,35 +59,6 @@ app.use("/api/auth", indexRouter.auth);
 app.use("/api/sessions", indexRouter.sessions);
 app.use("/views", indexRouter.views);
 
-//Rota de prueba de logger -----------------------------------------------
-app.get("/loggerTest", (req, res) => {
-  logger.info(
-    `El servidor se esta ejecutando en el entorno de ${
-      config.node_env === "dev" ? "desarrollo" : "produccion"
-    }`
-  );
-
-  logger.fatal(
-    "Log de tipo fatal. Debe aparecer en consola y en archivo solo si se esta en el entorno productivo"
-  );
-  logger.error(
-    "Log de tipo error. Debe aparecer en consola y en archivo solo si se esta en el entorno productivo"
-  );
-  logger.warning(
-    "Log de tipo warning. Debe aparecer solo en consola para ambos entornos"
-  );
-  logger.info(
-    "Log de tipo info. Debe aparecer solo en consola para ambos entornos"
-  );
-  logger.http(
-    "Log de tipo http. Debe aparecer en consola solo cuando se esta en el entorno de desarrollo"
-  );
-  logger.debug(
-    "Log de tipo debug. Debe aparecer en consola solo cuando se esta en el entorno de desarrollo"
-  );
-  res.send("Logger testing");
-});
-
 app.use(errorMiddleware);
 
 app.get("/", (_req, res) => {

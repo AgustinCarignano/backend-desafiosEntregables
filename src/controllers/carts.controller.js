@@ -1,4 +1,5 @@
 import cartsService from "../services/carts.service.js";
+import productsService from "../services/products.service.js";
 import CustomError from "../utils/errors/customError.utils.js";
 import { ErrorEnums } from "../utils/errors/errors.enums.js";
 import { logger } from "../utils/winston.js";
@@ -20,8 +21,8 @@ export class CartsController {
     }
   }
   async getCart(req, res, next) {
-    const { cid } = req.params;
     try {
+      const { cid } = req.params;
       if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
       const cart = await cartsService.getCartById(cid);
       if (cart instanceof Error)
@@ -35,12 +36,18 @@ export class CartsController {
     }
   }
   async addProduct(req, res, next) {
-    const { cid, pid } = req.params;
     try {
-      if (!cid || !pid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const { cid, pid } = req.params;
+      const { email } = req.user;
+      if (!cid || !pid)
+        return CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const { owner } = await productsService.getProductById(pid);
+      if (email === owner) {
+        return CustomError.generateError(ErrorEnums.UNAUTHORIZED);
+      }
       const cart = await cartsService.addProductToCart(cid, pid);
       if (cart instanceof Error)
-        CustomError.generateError(ErrorEnums.SERVER_ERROR);
+        return CustomError.generateError(ErrorEnums.SERVER_ERROR);
       res.status(200).json({ message: "Producto agregado con éxito", cart });
     } catch (error) {
       next(error);
@@ -48,9 +55,14 @@ export class CartsController {
   }
   async updateCart(req, res, next) {
     const { cid } = req.params;
+    const { email } = req.user;
+    const products = req.body;
     try {
       if (!cid) CustomError.generateError(ErrorEnums.MISSING_VALUES);
-      const products = req.body;
+      products.forEach((prod) => {
+        if (prod.owner === email)
+          CustomError.generateError(ErrorEnums.UNAUTHORIZED);
+      });
       const cart = await cartsService.updateCart(cid, products);
       if (cart instanceof Error)
         CustomError.generateError(ErrorEnums.MISSING_VALUES);
@@ -64,10 +76,13 @@ export class CartsController {
   }
   async updateProduct(req, res, next) {
     const { cid, pid } = req.params;
+    const { email } = req.user;
     const { quantity } = req.body;
     try {
       if (!cid || !pid || !quantity)
         CustomError.generateError(ErrorEnums.MISSING_VALUES);
+      const { owner } = await productsService.getProductById(pid);
+      if (owner === email) CustomError.generateError(ErrorEnums.UNAUTHORIZED);
       const cart = await cartsService.updateProductInCart(cid, pid, quantity);
       if (cart instanceof Error)
         CustomError.generateError(ErrorEnums.NOT_FOUND);

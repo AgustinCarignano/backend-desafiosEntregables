@@ -1,3 +1,4 @@
+import { verifyToken } from "../utils/jwt.utils.js";
 import { logger } from "../utils/winston.js";
 
 export function isAdmin(req, res, next) {
@@ -6,9 +7,15 @@ export function isAdmin(req, res, next) {
     for (const key in req.body) {
       req.session[key] = req.body[key];
     }
+    req.user = {
+      fullName: "Admin",
+      email: "adminCoder@coder.com",
+      role: "admin",
+      cart: null,
+    };
     res.cookie(
       "userSession",
-      { name: "Coder", rol: "admin" },
+      { name: "Coder", role: "admin" },
       { signed: true }
     );
     req.session.isAdmin = true;
@@ -31,8 +38,30 @@ export function isAdminAuth(req, res, next) {
 
 export function isUserAuth(req, res, next) {
   if (!req.session.isAdmin) next();
-  else log.info("An admin has tried to get a user resource");
+  else logger.info("An admin has tried to get a user resource");
   res
     .status(403)
     .json({ message: "Unauthorized to get access to this endpoint" });
+}
+
+export function isClient(req, res, next) {
+  const { userSession } = req.signedCookies;
+  if (userSession.role === "premium" || userSession.role === "user") next();
+  else {
+    logger.info("An admin can't access to this endpoint");
+    res
+      .status(403)
+      .json({ message: "Unauthorized to get access to this endpoint" });
+  }
+}
+
+export function isProvider(req, res, next) {
+  const { userSession } = req.signedCookies;
+  if (userSession.role === "premium" || userSession.role === "admin") next();
+  else {
+    logger.info("An user can't access to this endpoint");
+    res
+      .status(403)
+      .json({ message: "Unauthorized to get access to this endpoint" });
+  }
 }

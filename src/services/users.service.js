@@ -3,6 +3,14 @@ import usersRepository from "../persistence/repositories/users.repository.js";
 import cartsDAO from "../persistence/DAOs/cartsDAO/cartsMongo.js";
 
 class UsersService {
+  async getAllUsers() {
+    try {
+      const users = usersRepository.getAllUsers();
+      return users;
+    } catch (error) {
+      return error;
+    }
+  }
   async addUser(user) {
     try {
       const { _id } = await cartsDAO.createCart();
@@ -31,6 +39,15 @@ class UsersService {
   async validateUser(email, password) {
     try {
       const user = await usersRepository.validateUser(email, password);
+      if (user instanceof Error) throw user;
+      return user;
+    } catch (error) {
+      return error;
+    }
+  }
+  async updateUser(email, obj) {
+    try {
+      const user = await usersRepository.updateUser(email, obj);
       return user;
     } catch (error) {
       return error;
