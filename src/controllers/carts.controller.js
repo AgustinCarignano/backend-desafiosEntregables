@@ -103,7 +103,7 @@ export class CartsController {
         CustomError.generateError(ErrorEnums.NOT_FOUND);
       res.status(200).json({
         message: `Eliminado el producto con el id ${pid} del carrito`,
-        cart,
+        id: cid,
       });
     } catch (error) {
       next(error);

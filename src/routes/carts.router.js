@@ -6,11 +6,11 @@ const router = Router();
 
 router.post("/", cartsController.createCart);
 router.get("/:cid", cartsController.getCart);
-router.post("/:cid/product/:pid", isClient, cartsController.addProduct);
 router.put("/:cid", isClient, cartsController.updateCart);
+router.delete("/:cid", cartsController.cleanCart);
+router.post("/:cid/product/:pid", isClient, cartsController.addProduct);
 router.put("/:cid/products/:pid", isClient, cartsController.updateProduct);
 router.delete("/:cid/products/:pid", cartsController.deleteProduct);
-router.delete("/:cid", cartsController.cleanCart);
 router.get("/:cid/purchase", cartsController.checkOut);
 
 export default router;

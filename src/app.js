@@ -5,10 +5,12 @@ import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import "./middlewares/passport.middleware.js";
 import "./persistence/MongoDB/configMongo.js";
 import config from "./config.js";
 import { __dirname } from "./utils/path.utils.js";
+import { swaggerSetup } from "./swaggerSpecs.js";
 //Routes imports -------------------------------------------
 import indexRouter from "./routes/index.router.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
@@ -58,6 +60,8 @@ app.use("/api/products/", indexRouter.products);
 app.use("/api/auth", indexRouter.auth);
 app.use("/api/sessions", indexRouter.sessions);
 app.use("/views", indexRouter.views);
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 app.use(errorMiddleware);
 
