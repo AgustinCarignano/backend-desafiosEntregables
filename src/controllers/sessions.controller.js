@@ -7,7 +7,7 @@ class SessionController {
     res.cookie(
       "userSession",
       { name: req.user.fullName, role: req.user.role },
-      { signed: true }
+      { signed: false }
     );
     req.session.logged = true;
     req.session.isAdmin = false;
@@ -17,7 +17,7 @@ class SessionController {
     res.cookie(
       "userSession",
       { name: req.user.fullName, role: req.user.role },
-      { signed: true }
+      { signed: false }
     );
     req.session.logged = true;
     res.redirect("/views/products");
@@ -26,7 +26,7 @@ class SessionController {
     res.cookie(
       "userSession",
       { name: req.user.fullName, role: req.user.role },
-      { signed: true }
+      { signed: false }
     );
     req.session.logged = true;
     req.session.isAdmin = false;
@@ -36,7 +36,7 @@ class SessionController {
     res.cookie(
       "userSession",
       { name: req.user.fullName, role: req.user.role },
-      { signed: true }
+      { signed: false }
     );
     req.session.logged = true;
     req.session.isAdmin = false;

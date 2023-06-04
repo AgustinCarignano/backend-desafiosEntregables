@@ -16,7 +16,7 @@ import indexRouter from "./routes/index.router.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { logger } from "./utils/winston.js";
 
-const app = express();
+export const app = express();
 const PORT = config.port;
 
 app.use(express.json());

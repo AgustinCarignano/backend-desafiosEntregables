@@ -6,13 +6,17 @@
   "type": "module",
   "scripts": {
     "start": "nodemon src/app.js",
-    "seed": "node src/utils/seed/seedIndex.js"
+    "seed": "node src/utils/seed/seedIndex.js",
+    "test": "mocha src/test/**/*.test.js"
   },
   "nodemonConfig": {
     "watch": [
       "src"
     ],
-    "ext": "js, html, yaml"
+    "ext": "js, html, yaml",
+    "ignore": [
+      "src/__test__/**/*.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -48,6 +52,9 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.0"
+    "@faker-js/faker": "^8.0.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

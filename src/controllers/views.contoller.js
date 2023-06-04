@@ -54,7 +54,7 @@ class ViewsController {
 
   async getProducts(req, res) {
     const { limit = 10, page = 1, sort, query } = req.query;
-    const { userSession } = req.signedCookies;
+    const { userSession } = req.cookies;
     const { cart } = req.user ? req.user : "";
 
     const products = await productsService.getProducts({
@@ -123,7 +123,7 @@ class ViewsController {
   }
 
   async activateChat(req, res) {
-    const { userSession } = req.signedCookies;
+    const { userSession } = req.cookies;
     const userName = userSession.name;
     res.render("chat", { user: userName });
   }

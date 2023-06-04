@@ -3,7 +3,7 @@ import { logger } from "../utils/winston.js";
 
 export function errorMiddleware(error, _req, res, _next) {
   logger.error(error.message);
-  if (!(error instanceof CustomError)) {
+  if (!error.cause) {
     return res.status(500).json({
       status: "Process error",
       message: error.message,

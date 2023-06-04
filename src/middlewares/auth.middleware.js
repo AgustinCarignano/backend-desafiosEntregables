@@ -16,7 +16,7 @@ export function isAdmin(req, res, next) {
     res.cookie(
       "userSession",
       { name: "Coder", role: "admin" },
-      { signed: true }
+      { signed: false }
     );
     req.session.isAdmin = true;
     req.session.logged = true;
@@ -45,8 +45,15 @@ export function isUserAuth(req, res, next) {
 }
 
 export function isClient(req, res, next) {
-  const { userSession } = req.signedCookies;
-  if (userSession.role === "premium" || userSession.role === "user") next();
+  const token = req.cookies.client_token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "You must be logged for get access to this endpoint" });
+  }
+  const { user } = verifyToken(req.cookies.client_token);
+  if (!req.user) req.user = user;
+  if (user.role === "premium" || user.role === "user") next();
   else {
     logger.info("An admin can't access to this endpoint");
     res
@@ -56,8 +63,15 @@ export function isClient(req, res, next) {
 }
 
 export function isProvider(req, res, next) {
-  const { userSession } = req.signedCookies;
-  if (userSession.role === "premium" || userSession.role === "admin") next();
+  const token = req.cookies.client_token;
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "You must be logged for get access to this endpoint" });
+  }
+  const { user } = verifyToken(req.cookies.client_token);
+  if (!req.user) req.user = user;
+  if (user.role === "premium" || user.role === "admin") next();
   else {
     logger.info("An user can't access to this endpoint");
     res

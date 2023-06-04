@@ -15,7 +15,6 @@ class ProductsMongo {
       param.sort = param.sort === "asc" ? { price: 1 } : { price: -1 };
     }
     try {
-      //const { param, query } = searchTerms;
       const products = await productsModel.paginate(query, {
         ...param,
         lean: true,
