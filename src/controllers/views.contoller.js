@@ -54,8 +54,9 @@ class ViewsController {
 
   async getProducts(req, res) {
     const { limit = 10, page = 1, sort, query } = req.query;
-    const { userSession } = req.cookies;
-    const { cart } = req.user ? req.user : "";
+    // const { userSession } = req.cookies;
+    // const { cart } = req.user ? req.user : "";
+    const user = req.user;
 
     const products = await productsService.getProducts({
       limit,
@@ -89,8 +90,8 @@ class ViewsController {
     const render = products.docs.length === 0 ? false : true;
 
     res.render("products", {
-      user: userSession,
-      cartId: cart ? cart.toString() : "",
+      user: { name: user.fullName, role: user.role },
+      cartId: user.cart ? user.cart.toString() : "",
       status: "success",
       render: render,
       payload: products.docs,
@@ -126,6 +127,24 @@ class ViewsController {
     const { userSession } = req.cookies;
     const userName = userSession.name;
     res.render("chat", { user: userName });
+  }
+
+  async clientArea(req, res) {
+    const user = req.user;
+    const existingDocuments = {
+      identification: false,
+      address: false,
+      account: false,
+      avatar: false,
+    };
+    let avatar;
+    if (user.documents) {
+      user.documents.forEach((item) => {
+        existingDocuments[item.name] = true;
+      });
+      avatar = user.documents.find((item) => item.name === "avatar");
+    }
+    res.render("personal", { user, existingDocuments, avatar });
   }
 }
 

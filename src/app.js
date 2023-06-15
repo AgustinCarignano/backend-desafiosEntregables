@@ -60,6 +60,7 @@ app.use("/api/products/", indexRouter.products);
 app.use("/api/auth", indexRouter.auth);
 app.use("/api/sessions", indexRouter.sessions);
 app.use("/views", indexRouter.views);
+app.use("/api/users", indexRouter.users);
 
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 

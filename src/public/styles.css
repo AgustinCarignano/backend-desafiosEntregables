@@ -143,8 +143,10 @@ a:active {
 
 .flexContainer {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-end;
+  width: 70%;
+  gap: 20px;
+  margin: 20px auto;
 }
 
 .cartContainer {
@@ -209,6 +211,12 @@ a:active {
   cursor: pointer;
 }
 
+.linkPersonalArea {
+  display: inline-block;
+  margin-top: 20px;
+  margin-left: 80%;
+}
+
 .linkError {
   margin-bottom: 20px;
 }
@@ -237,4 +245,21 @@ button {
   background-color: white;
   color: #222;
   transition: 0.3s;
+}
+
+.emptyAvatar {
+  width: 100px;
+  height: 100px;
+  background-color: #909090;
+  border-radius: 50px;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.avatarSection > img,
+.avatarSection > div {
+  margin-bottom: 20px;
 }

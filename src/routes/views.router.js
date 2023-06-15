@@ -30,4 +30,6 @@ router.get("/products/:pid", isNotLogged, viewsController.getProduct);
 
 router.get("/messages", isUserAuth, viewsController.activateChat);
 
+router.get("/clientArea", isNotLogged, viewsController.clientArea);
+
 export default router;

@@ -52,7 +52,11 @@ export function isClient(req, res, next) {
       .json({ message: "You must be logged for get access to this endpoint" });
   }
   const { user } = verifyToken(req.cookies.client_token);
-  if (!req.user) req.user = user;
+  if (!req.user) {
+    req.user = user;
+  } else {
+    user = req.user;
+  }
   if (user.role === "premium" || user.role === "user") next();
   else {
     logger.info("An admin can't access to this endpoint");
@@ -70,7 +74,11 @@ export function isProvider(req, res, next) {
       .json({ message: "You must be logged for get access to this endpoint" });
   }
   const { user } = verifyToken(req.cookies.client_token);
-  if (!req.user) req.user = user;
+  if (!req.user) {
+    req.user = user;
+  } else {
+    user = req.user;
+  }
   if (user.role === "premium" || user.role === "admin") next();
   else {
     logger.info("An user can't access to this endpoint");

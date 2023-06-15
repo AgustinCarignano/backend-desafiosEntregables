@@ -1,0 +1,61 @@
+<div class="flexContainer">
+  <a class="linksTo" href="/views/products">Home</a>
+</div>
+<h2>Area personal</h2>
+<h3>Datos Personales</h3>
+{{!-- <figure class="avatarSection">
+  {{#if existingDocuments.avatar}}
+    <img src="{{avatar.reference}}" alt="" />
+  {{else}}
+    <div class="emptyAvatar"></div>
+    <form
+      action="/api/users/{{user.id}}/documents"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <input
+        type="file"
+        name="profile-avatar"
+        id="profile"
+        oninput="this.form.submit()"
+      />
+    </form>
+  {{/if}}
+  <figcaption>Imagen de perfil</figcaption>
+</figure> --}}
+<p>Tipo de usuario: {{user.role}}</p>
+<p>Email: {{user.email}}</p>
+
+<p>Para ser un usuario premium y poder ofertar productos, los siguientes
+  documentos son requeridos</p>
+<form
+  action="/api/users/{{user.id}}/documents"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <label for="profile">Foto de perfil</label>
+  <input type="file" name="profile-avatar" id="profile" />
+  {{#if existingDocuments.avatar}}
+    <span>(Ya has cargado este archivo, pero puede reemplazarlo)</span>
+  {{/if}}
+  <label for="identification">Identificacion</label>
+  <input type="file" name="document-identification" id="identification" />
+  {{#if existingDocuments.identification}}
+    <span>(Ya has cargado este archivo, pero puede reemplazarlo)</span>
+  {{/if}}
+  <br />
+  <label for="address">Comprobante de domicilio</label>
+  <input type="file" name="document-address" id="address" />
+  {{#if existingDocuments.address}}
+    <span>(Ya has cargado este archivo, pero puede reemplazarlo)</span>
+  {{/if}}
+  <br />
+  <label for="accuont">Comprobante de estado de cuenta</label>
+  <input type="file" name="document-account" id="accuont" />
+  {{#if existingDocuments.account}}
+    <span>(Ya has cargado este archivo, pero puede reemplazarlo)</span>
+  {{/if}}
+  <input type="submit" value="ENVIAR" />
+</form>
+<br />
+<a href="/api/users/premium/{{user.id}}">Upgrade to premium</a>
